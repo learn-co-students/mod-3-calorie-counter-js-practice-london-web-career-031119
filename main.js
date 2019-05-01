@@ -93,7 +93,7 @@ const addIntake = () => {
                 note: note.value
             }
         }
-
+        //! Pushing the newly created data into the state
         createIntake(intake)
             .then((data) => {
                 state.intakes.push(data)
@@ -110,6 +110,7 @@ const renderIntakes = intakes => {
 }
 
 //! Init
+//! Pushing the intake from the server to the state const
 
 const init = () => {
     getIntake()
