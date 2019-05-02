@@ -26,27 +26,24 @@
       <form id="bmr-calulator" class="uk-card-header">
         <h3>Basal Metabolic Rate</h3>
         <div class="uk-margin-small">
-          <input class="uk-input" type="number" placeholder="Weight (lbs)" min="1">
+          <input class="uk-input" type="number" placeholder="Weight (kg)" min="1" max="200">
         </div>
         <div class="uk-margin-small">
-          <input class="uk-input" type="number" placeholder="Height (inches)" min="1">
+          <input class="uk-input" type="number" placeholder="Height (cm)" min="1" mac="250">
         </div>
         <div class="uk-margin-small">
-          <input class="uk-input" type="number" placeholder="Age (years)" min="1">
+          <input class="uk-input" type="number" placeholder="Age (yr)" min="1" max="99">
         </div>
-        <button class="uk-button uk-button-default"
-          uk-tooltip="title: BMR (Basal Metabolic Rate) is the number of calories required to keep your body functioning at rest. This is the amount of calories your body burns even if you did nothing all day.; pos: left">Calculate
-          BMR</button>
+        <button onclick="event.preventDefault();calcBMR(form.elements)" class="uk-button uk-button-default"
+          uk-tooltip="title: BMR is the number of calories required to keep your body functioning at rest. This is the amount of calories your body burns even if you did nothing all day.; pos: left">Calculate</button>
       </form>
 
       <div id="bmr-calculation-result" class="uk-padding">
         <h3 class="uk-text-center"
           uk-tooltip="title: Measured in kcal. BMR varies depending on the individual but this is a good starting point.">
-          <span id="lower-bmr-range">500</span><em class="uk-text-meta">kcal</em>
-          —
-          <span id="higher-bmr-range">700</span><em class="uk-text-meta">kcal</em>
+          <span id="bmr"></span><em class="uk-text-meta">kcal</em>
         </h3>
-        <progress class="uk-progress" value="0" max="0"
+        <progress class="uk-progress" value="0" max="100"
           uk-tooltip="title: Keep bar below 100% to lose weight, above 100% to gain weight."></progress>
       </div>
     </div>
@@ -62,7 +59,7 @@
           <div class="uk-margin-small">
             <textarea type="text" class="uk-textarea" placeholder="Notes" style="resize:none"></textarea>
           </div>
-          <button class="uk-button uk-button-default">Add Calorie Intake</button>
+          <button onclick="newEntry(form.elements)" class="uk-button uk-button-default">Add Calorie Intake</button>
         </div>
       </form>
 
@@ -75,7 +72,7 @@
   <div id="edit-form-container" uk-modal>
     <div class="uk-modal-dialog uk-modal-body">
       <button class="uk-modal-close-default" type="button" uk-close></button>
-      <form id="new-calorie-form">
+      <form id="edit-calorie-form">
         <h3>Edit calorie intake:</h3>
         <div>
           <div class="uk-margin-small">
@@ -84,7 +81,7 @@
           <div class="uk-margin-small">
             <textarea type="text" name="note" class="uk-textarea" placeholder="Notes" style="resize:none"></textarea>
           </div>
-          <button class="uk-button uk-button-default">Update Entry</button>
+          <button onclick="event.preventDefault();editEntry(form.elements)" class="uk-button uk-button-default">Update</button>
         </div>
       </form>
     </div>

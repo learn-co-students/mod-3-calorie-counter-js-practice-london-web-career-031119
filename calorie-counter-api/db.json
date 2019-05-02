@@ -1,0 +1,37 @@
+{
+  "calorie_entries": [
+    {
+      "id": 1,
+      "calorie": 1,
+      "note": "Diet Coke"
+    },
+    {
+      "id": 2,
+      "calorie": 206,
+      "note": "Taiyaki - Ice-cream cone"
+    },
+    {
+      "id": 3,
+      "calorie": 800,
+      "note": "Taco Truck - Chicken Burrito"
+    },
+    {
+      "id": 4,
+      "calorie": 265,
+      "note": "Vegetable Kofta"
+    },
+    {
+      "id": 5,
+      "calorie": 52,
+      "note": "Kung Fu Tea - Passion fruit green tea with boba"
+    },
+    {
+      "id": 6,
+      "calorie": 918,
+      "note": "Bodega down the block - Cheese burger with all the topings..."
+    }
+  ],
+  "bmr": {
+    "bmr": 1786
+  }
+}

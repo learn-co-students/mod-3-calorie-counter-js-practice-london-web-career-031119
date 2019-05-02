@@ -1,31 +1,46 @@
 // your code here, it may be worth it to ensure this file only runs AFTER the dom has loaded.
 
-// Existing List
-CAL_ENTRIES_URL = 'http://localhost:3000/api/v1/calorie_entries'
+// VAR
+CAL_URL = 'http://localhost:3000/calorie_entries'
+BMR_URL = 'http://localhost:3000/bmr'
+STATE = {
+   entries: [],
+   selectEntry: null,
+   bmr: null,
+   cals: null
+}
 
 // API
-const getEntries = () => fetch(CAL_ENTRIES_URL)
-   .then(r => r.json())
+const getEntries = () => fetch(CAL_URL)
+   .then(r => r.json()).then((data)=>STATE.entries = data).catch((error)=>alert(error))
 
-const updateEntry = (entry) => fetch(CAL_ENTRIES_URL + `/${entry.id}`, {
+const patchEntry = (entry) => fetch(CAL_URL + `/${entry.id}`, {
    method: 'PATCH',
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify(entry)
-})
+}).then(r => r.json()).catch((error)=>alert(error))
 
-const addEntry = (entry) => fetch(CAL_ENTRIES_URL, {
+const postEntry = (entry) => fetch(CAL_URL, {
    method: 'POST',
    headers: { 'Content-Type': 'application/json' },
    body: JSON.stringify(entry)
-}).then(r => r.json())
+}).then(r => r.json()).catch((error)=>alert(error))
 
-const deleteEntry = (id) => fetch(CAL_ENTRIES_URL + `/${id}`, {
-   method: 'DELETE' })
+const deleteEntry = (id) => fetch(CAL_URL + `/${id}`, {
+   method: 'DELETE' }).catch((error)=>alert(error))
+
+const postBMR = (bmr) => fetch(BMR_URL, {
+   method: 'POST',
+   headers: { 'Content-Type': 'application/json' },
+   body: JSON.stringify(bmr)
+}).then(r => r.json()).catch((error)=>alert(error))
+
+const getBMR = () => fetch(BMR_URL).then(r => r.json()).then((data)=>STATE.bmr = data.bmr).catch((error)=>alert(error))
 
 // Display Agents
-const showEntries = entries => entries.forEach(showEntry)
+const showEntries = entries => entries.forEach(renderEntry)
 
-const showEntry = entry => {
+const renderEntry = entry => {
    const entryLi = document.createElement('li')
    entryLi.className = 'calories-list-item'
    entryLi.innerHTML = `
@@ -39,50 +54,61 @@ const showEntry = entry => {
          </div>
       </div>
       <div class="list-item-menu">
-         <a class="edit-button" data-edit-id="${entry.id}" uk-toggle="target: #edit-form-container">✎</a>
-         <a class="delete-button" data-del-id="${entry.id}">✘</a>
+         <a class="edit-button" onclick="editForm(${entry.id})" uk-toggle="target: #edit-form-container">✎</a>
+         <a class="delete-button" onclick="deleteEntry(${entry.id}).preventDefault()">✘</a>
       </div>`
-   entryLi.addEventListener('click',(e) => entryAction(entry, e.target.className))
    const li = document.querySelector('ul#calories-list')
    li.append(entryLi)
 }
 
-// DOM
-const entryAction = (entry, action) => {
-   if (action === 'edit-button') {
-      console.log('EDIT')
-      form = document.querySelector('form#new-calorie-form')
-      form.addEventListener('submit', (e) => {
-         e.preventDefault()
-         form.calorie = entry.calorie
-         form.note = entry.note
-         const data = {
-            id: entry.id,
-            calorie: form.target.calorie,
-            note: form.target.note
-         }
-         updateEntry(data)
-      })
-   } else if (action === 'delete-button') {
-      console.log('DEL')
-      deleteEntry(entry.id)
-   } else { console.log(action) }
+const findEntry = id => STATE.entries.find((e)=>e.id === id)
+
+const editForm = (id) => {
+   STATE.selectEntry = id
+   const entry = findEntry(id)
+   const form = document.querySelector('#edit-calorie-form')
+   form.elements[0].value = entry.calorie
+   form.elements[1].value = entry.note
 }
 
-const initEntryForm = () => {
-   const form = document.querySelector('form#new-calorie-form')
-   form.addEventListener('submit', (e) => {
-      e.preventDefault()
+const editEntry = (data) => {
+   const entry = {
+      id: STATE.selectEntry,
+      calorie: parseInt(data[0].value),
+      note: data[1].value
+   }
+   patchEntry(entry)
+}
+
+const newEntry = (data) => {
       const entry = {
-         calorie: form.target.calorie,
-         note: form.target.note
+         calorie: parseInt(data[0].value),
+         note: data[1].value
       }
-      addEntry(entry)
-   })
+      postEntry(entry)
+   }
+
+const calcBMR = (data) => {
+   STATE.bmr = Math.round((10*data[0].value) + (6.25*data[1].value) - (5*data[2].value) + 5)
+   postBMR({bmr: STATE.bmr})
+   renderBMR(STATE.bmr)
+}
+   // M= BMR = 10W + 6.25H - 5A + 5
+   // F= BMR = 10W + 6.25H - 5A - 161
+const renderBMR = data => {
+   bmr = document.querySelector('span#bmr')
+   bmr.innerHTML = data
+}
+
+const renderProgress = () => {
+   STATE.entries.map((entry) => STATE.cals += entry.calorie)
+   const progress = document.querySelector('progress.uk-progress')
+   progress.value = (STATE.cals/STATE.bmr)*100
 }
 
 // Init
+
 window.addEventListener('DOMContentLoaded', () => {
    getEntries().then(showEntries)
-   initEntryForm()
+   getBMR().then(renderBMR).then(renderProgress)
 })
